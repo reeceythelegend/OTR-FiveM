@@ -1,0 +1,13 @@
+﻿Server Commands:
+
+"clear" 
+- Clears all vehicles for all players. 
+- Restricted
+
+"reset"
+- Clear all vehicles and move all players to spawn(golf course).
+
+
+Client Commands:
+"spawn"
+- Move player to golf spawn.

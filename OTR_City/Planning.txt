@@ -1,0 +1,31 @@
+﻿Player joins game
+- Put into "lobby", confined area, no pvp, no weapons
+- Waits until 2 or more players joined
+
+2+ players in game
+- Player gets randomly selected to be "on the run"
+
+Pre Game
+- on the run player, gets moved to random place in city
+- Gets 2 mins to hide
+- Other players still in lobby 
+
+Game Start
+- Players are moved to spawn
+- Timer started
+- all given weapon, pvp enabled
+
+Player Dies
+
+On the run player
+- Game over, hunters win
+
+Hunter player
+- Moved to spawn
+- Weapon given again
+
+Game End
+- winning player/team broadcast
+- Players moved to lobby
+- all weapons cleared
+- all vehicles cleared
