@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CitizenFX.Core;
 using static CitizenFX.Core.Native.API;
@@ -19,10 +20,16 @@ namespace OTR_CityServer
 
             ClearCommand();
             ResetCommand();
+            TimerCommand();
 
+            //Event Handlers
+            
         }
 
-       
+        //Global Variables
+        //---------------------------
+
+
 
         //Commands/Functions Defined
         //
@@ -40,6 +47,8 @@ namespace OTR_CityServer
         
         public void ClearCommand() //Delete all loaded vehicles on all clients
         {
+            
+
             RegisterCommand("clear", new Action(() =>
             {            
                 TriggerClientEvent("ClearVehicles");
@@ -57,6 +66,14 @@ namespace OTR_CityServer
             }), true);
         }
 
+        public void TimerCommand() //Start and display timer for all players
+        {
+            RegisterCommand("timer", new Action(() =>
+            {
+                TriggerClientEvent("Timer", 60); 
+
+            }), false);
+        }
 
 
 

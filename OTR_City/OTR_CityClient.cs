@@ -14,12 +14,20 @@ namespace OTR_City
         public OTR_CityClient()
         {
             //Event Handlers
+            Tick += OnTick;
             EventHandlers["onClientResourceStart"] += new Action<string>(OnClientResourceStart);
             EventHandlers["playerSpawned"] += new Action(OnPlayerSpawned);
             EventHandlers["ClearVehicles"] += new Action(ClearVehicles);
             EventHandlers["ResetGame"] += new Action(ResetGame);
+            EventHandlers["Timer"] += new Action<int>(Timer);
+            EventHandlers["CustomText"] += new Action<string, string>(CustomText);
             
         }
+
+        //Global Variables
+        //---------------------------
+        string TimerLabelPrefix;
+        string TimerLabelText;
 
         //FiveM Native Functions
         //
@@ -45,8 +53,14 @@ namespace OTR_City
             //Police ignore player
             PoliceIgnorePlayer(true);
 
+
         }
 
+        public async Task OnTick()
+        {
+            CustomText(TimerLabelPrefix, TimerLabelText); //Display text from timer
+
+        }
 
         //Server To Client Functions
         //
@@ -78,7 +92,6 @@ namespace OTR_City
             ClearVehicles();
             MoveToSpawn();
         }
-
 
 
         //Client Custom Functions
@@ -152,6 +165,47 @@ namespace OTR_City
             });
 
         }
+        public void Timer(int Time) //create timer
+        {
+            new Thread(new ThreadStart(TimerSet)).Start();
+            Debug.WriteLine("Timer set thread started");
+
+            void TimerSet()
+            {
+                //Time int passed through Timer function
+                while (Time != 0)
+                {
+                    Thread.Sleep(1000);
+                    Time = Time - 1;
+
+                    TimeSpan MinSec = TimeSpan.FromSeconds(Time);
+                    TimerLabelPrefix = "Time Remaining: ~a~";
+                    TimerLabelText = MinSec.ToString(@"mm\:ss");
+
+                    if (Time == 0)
+                    {
+                        TimerLabelPrefix = "Time up";
+                        TimerLabelText = "";
+
+                        
+                        break;
+
+                    }
+                }
+            }
+        }
+        public void CustomText(string TimerLabelPrefix, string TimerLabelText) //Display text in top right corner (used for timer)
+        {
+            AddTextEntry("TestLabel", TimerLabelPrefix);
+            BeginTextCommandDisplayText("TestLabel");
+            AddTextComponentSubstringPlayerName(TimerLabelText);
+            SetTextFont(4);
+            SetTextOutline();
+            SetTextScale(0.5f, 0.5f);
+            EndTextCommandDisplayText(0.9f, 0.05f);
+            
+        }
+
 
         //Client Only Commands
         //
