@@ -23,13 +23,14 @@ namespace OTR_CityServer
             TimerCommand();
 
             //Event Handlers
-            
+            EventHandlers.Add("Timer", new Action<int>(Timer));
         }
 
         //Global Variables
         //---------------------------
-
-
+        bool TimerIsUp;
+        string TimerLabelPrefix;
+        string TimerLabelText;
 
         //Commands/Functions Defined
         //
@@ -44,19 +45,19 @@ namespace OTR_CityServer
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-        
+
         public void ClearCommand() //Delete all loaded vehicles on all clients
         {
-            
+
 
             RegisterCommand("clear", new Action(() =>
-            {            
+            {
                 TriggerClientEvent("ClearVehicles");
-                
+
             }), true);
         }
 
-        
+
         public void ResetCommand() //Delete all loaded vehicles and move all players to spawn
         {
             RegisterCommand("reset", new Action(() =>
@@ -70,16 +71,35 @@ namespace OTR_CityServer
         {
             RegisterCommand("timer", new Action(() =>
             {
-                TriggerClientEvent("Timer", 60); 
+                Timer(90);
 
             }), false);
         }
 
 
 
+        public void Timer(int Time) //create timer
+        {
+            new Thread(new ThreadStart(TimerSet)).Start();
+            Debug.WriteLine("Timer set thread started");
 
+            void TimerSet()
+            {
+                //Time int passed through Timer function
+                while (Time != 0)
+                {
+                    Thread.Sleep(1000);
+                    Time = Time - 1;
+                    TriggerClientEvent("TimerDisplay", Time);
 
+                    if (Time == 0)
+                    {
+                        TriggerClientEvent("TimerDisplay", Time);
+                        break;
+                    }
+                }
+            }
 
-
+        }
     }
 }

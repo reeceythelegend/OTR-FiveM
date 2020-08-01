@@ -19,8 +19,8 @@ namespace OTR_City
             EventHandlers["playerSpawned"] += new Action(OnPlayerSpawned);
             EventHandlers["ClearVehicles"] += new Action(ClearVehicles);
             EventHandlers["ResetGame"] += new Action(ResetGame);
-            EventHandlers["Timer"] += new Action<int>(Timer);
-            EventHandlers["CustomText"] += new Action<string, string>(CustomText);
+            EventHandlers["TimerDisplay"] += new Action<int>(TimerDisplay);
+
             
         }
 
@@ -28,7 +28,7 @@ namespace OTR_City
         //---------------------------
         string TimerLabelPrefix;
         string TimerLabelText;
-
+        bool TimerIsUp;
         //FiveM Native Functions
         //
         //-----------------------------------
@@ -43,6 +43,7 @@ namespace OTR_City
             //Moves player to golf spawn
             TeleportToSpawnCommand();
 
+            
         }
 
         private void OnPlayerSpawned() //Runs on player spawn
@@ -58,7 +59,7 @@ namespace OTR_City
 
         public async Task OnTick()
         {
-            CustomText(TimerLabelPrefix, TimerLabelText); //Display text from timer
+            CustomText(); //Display text from timer
 
         }
 
@@ -165,36 +166,23 @@ namespace OTR_City
             });
 
         }
-        public void Timer(int Time) //create timer
+
+        public void TimerDisplay(int Time)
         {
-            new Thread(new ThreadStart(TimerSet)).Start();
-            Debug.WriteLine("Timer set thread started");
-
-            void TimerSet()
+            if (Time == 0)
             {
-                //Time int passed through Timer function
-                while (Time != 0)
-                {
-                    Thread.Sleep(1000);
-                    Time = Time - 1;
-
-                    TimeSpan MinSec = TimeSpan.FromSeconds(Time);
-                    TimerLabelPrefix = "Time Remaining: ~a~";
-                    TimerLabelText = MinSec.ToString(@"mm\:ss");
-
-                    if (Time == 0)
-                    {
-                        TimerLabelPrefix = "Time up";
-                        TimerLabelText = "";
-
-                        
-                        break;
-
-                    }
-                }
+                TimerLabelPrefix = "";
+            }
+            else
+            {
+                TimeSpan MinSec = TimeSpan.FromSeconds(Time);
+                TimerLabelPrefix = "Time Remaining: ~a~";
+                TimerLabelText = MinSec.ToString(@"mm\:ss");
             }
         }
-        public void CustomText(string TimerLabelPrefix, string TimerLabelText) //Display text in top right corner (used for timer)
+
+
+        public void CustomText() //Display text in top right corner (used for timer)
         {
             AddTextEntry("TestLabel", TimerLabelPrefix);
             BeginTextCommandDisplayText("TestLabel");
@@ -203,7 +191,7 @@ namespace OTR_City
             SetTextOutline();
             SetTextScale(0.5f, 0.5f);
             EndTextCommandDisplayText(0.9f, 0.05f);
-            
+            Debug.WriteLine(TimerLabelText);
         }
 
 
@@ -220,9 +208,6 @@ namespace OTR_City
                 
             }), false);
         }
-
-
-
 
 
     }
