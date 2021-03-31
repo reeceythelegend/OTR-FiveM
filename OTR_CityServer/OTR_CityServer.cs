@@ -24,6 +24,9 @@ namespace OTR_CityServer
 
             //Event Handlers
             EventHandlers.Add("Timer", new Action<int>(Timer));
+            EventHandlers["playerConnecting"] += new Action(OnPlayerConnecting);
+            EventHandlers["playerDropped"] += new Action(OnPlayerDropped);
+            //EventHandlers["Lobby"] += new Action<bool>(Lobby);
         }
 
         //Global Variables
@@ -31,6 +34,13 @@ namespace OTR_CityServer
         bool TimerIsUp;
         string TimerLabelPrefix;
         string TimerLabelText;
+
+        //Game States
+        bool LobbyActive;
+        bool PreGameActive;
+        bool MainGameActive;
+
+        int PlayerCount = 1;
 
         //Commands/Functions Defined
         //
@@ -45,7 +55,6 @@ namespace OTR_CityServer
             Console.ForegroundColor = ConsoleColor.Gray;
         }
 
-
         public void ClearCommand() //Delete all loaded vehicles on all clients
         {
 
@@ -56,7 +65,6 @@ namespace OTR_CityServer
 
             }), true);
         }
-
 
         public void ResetCommand() //Delete all loaded vehicles and move all players to spawn
         {
@@ -75,8 +83,6 @@ namespace OTR_CityServer
 
             }), false);
         }
-
-
 
         public void Timer(int Time) //create timer
         {
@@ -101,5 +107,27 @@ namespace OTR_CityServer
             }
 
         }
-    }
+
+        //Game States
+        //
+        //---------------------
+
+        private async void OnPlayerConnecting()
+        {
+            await Delay(0);
+            PlayerCount = PlayerCount + 1;
+            Debug.WriteLine("Playercount:");
+            Debug.WriteLine(PlayerCount.ToString());
+        }
+
+
+        private void OnPlayerDropped()
+        {
+            PlayerCount = PlayerCount - 1;
+            Debug.WriteLine("Playercount:");
+            Debug.WriteLine(PlayerCount.ToString());
+        }
+
+
+    } 
 }
