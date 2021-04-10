@@ -28,8 +28,6 @@ namespace OTR_City
         //---------------------------
         string TimerLabelPrefix = "";
         string TimerLabelText;
-        //int[3] LabelColour;
-        //int[] LabelTextColour;
         bool firstSpawn = true;
 
         //FiveM Native Functions
@@ -335,7 +333,7 @@ namespace OTR_City
             }
             else if (timerType == "gameStart")
             {
-                //LabelColour = { 255, 255, 255, 255 };
+                
                 TimeSpan MinSec = TimeSpan.FromSeconds(Time);
                 TimerLabelPrefix = "Game Time Remaining: ~a~";
                 TimerLabelText = MinSec.ToString(@"mm\:ss");
@@ -354,10 +352,8 @@ namespace OTR_City
                             Thread.Sleep(1000);
                             TimerLabelPrefix = "";
                             Thread.Sleep(1000);
-                            Debug.WriteLine("Time up loop");
                     }
-                        timerHasRun = false;
-                        
+                        timerHasRun = false;                        
                     }
                     if (timerHasRun == false)
                     {
@@ -387,7 +383,6 @@ namespace OTR_City
                             Thread.Sleep(1000);
                             TimerLabelPrefix = "";
                             Thread.Sleep(1000);
-                            //Debug.WriteLine("Time up loop");
                         }
                         timerHasRun = false;
 

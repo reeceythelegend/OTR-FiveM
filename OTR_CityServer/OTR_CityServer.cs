@@ -102,14 +102,8 @@ namespace OTR_CityServer
             }), true);
         }
 
-        public void Timer(int Time, string timerType, bool timerHasRun) //create timer
+        public void Timer(int Time, string timerType, bool timerHasRun) //take variables from timer commands
         {
-            //timerHasRun = false;
-            Debug.WriteLine(Time.ToString());
-            Debug.WriteLine(timerType.ToString());
-            Debug.WriteLine(timerHasRun.ToString());
-            Debug.WriteLine(killTimer.ToString());
-
             Thread timerSetThread = new Thread(TimerSet);
 
             if (timerType == "stopTimer")
@@ -117,8 +111,7 @@ namespace OTR_CityServer
                 killTimer = true;
                 Time = 0;
                 timerSetThread.Abort();
-                //TriggerClientEvent("TimerDisplay", Time, timerType, false);
-                Debug.WriteLine("Stopping timer thread");
+                Debug.WriteLine("Timer set thread killed");
             }
             else if (timerType == "hideStart" | timerType == "gameStart") 
             {
@@ -127,17 +120,16 @@ namespace OTR_CityServer
                 Debug.WriteLine("Timer set thread started");                    
             }
 
-            void TimerSet()
+            void TimerSet() //Time int passed through Timer function
             {
-                //Time int passed through Timer function
-                while (Time != 0) // | killTimer == false
+                
+                while (Time != 0)
                 {
                     if (killTimer == true | Time == 0)
                     {
                         Time = 0;                        
                         timerType = "stopTimer";
                         TriggerClientEvent("TimerDisplay", Time, timerType, false);
-                        Debug.WriteLine("breaking while loop");
                         break;
                     }
 
