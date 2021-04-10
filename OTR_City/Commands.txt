@@ -11,3 +11,6 @@
 Client Commands:
 "spawn"
 - Move player to golf spawn.
+
+"ped"
+- Changes player model

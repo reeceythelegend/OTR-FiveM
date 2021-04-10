@@ -23,7 +23,7 @@ namespace OTR_CityServer
             TimerCommand();
 
             //Event Handlers
-            EventHandlers.Add("Timer", new Action<int>(Timer));
+            EventHandlers.Add("Timer", new Action<int, string, bool>(Timer));
             EventHandlers["playerConnecting"] += new Action(OnPlayerConnecting);
             EventHandlers["playerDropped"] += new Action(OnPlayerDropped);
             //EventHandlers["Lobby"] += new Action<bool>(Lobby);
@@ -34,6 +34,8 @@ namespace OTR_CityServer
         bool TimerIsUp;
         string TimerLabelPrefix;
         string TimerLabelText;
+        bool timerHasRun = false;
+        bool killTimer = false;
 
         //Game States
         bool LobbyActive;
@@ -71,42 +73,81 @@ namespace OTR_CityServer
             RegisterCommand("reset", new Action(() =>
             {
                 TriggerClientEvent("ResetGame");
+                
 
             }), true);
         }
 
         public void TimerCommand() //Start and display timer for all players
         {
-            RegisterCommand("timer", new Action(() =>
+            RegisterCommand("hidetimer", new Action(() =>
             {
-                Timer(90);
+                Timer(180, "hideStart", true);
+                killTimer = false;
 
-            }), false);
+            }), true);
+
+            RegisterCommand("gametimer", new Action(() =>
+            {
+                Timer(1800, "gameStart", true);
+                killTimer = false;
+
+            }), true);
+            
+            RegisterCommand("stoptimer", new Action(() =>
+            {
+                Timer(0, "stopTimer", false);
+                killTimer = true;
+
+            }), true);
         }
 
-        public void Timer(int Time) //create timer
+        public void Timer(int Time, string timerType, bool timerHasRun) //create timer
         {
-            new Thread(new ThreadStart(TimerSet)).Start();
-            Debug.WriteLine("Timer set thread started");
+            //timerHasRun = false;
+            Debug.WriteLine(Time.ToString());
+            Debug.WriteLine(timerType.ToString());
+            Debug.WriteLine(timerHasRun.ToString());
+            Debug.WriteLine(killTimer.ToString());
+
+            Thread timerSetThread = new Thread(TimerSet);
+
+            if (timerType == "stopTimer")
+            {
+                killTimer = true;
+                Time = 0;
+                timerSetThread.Abort();
+                //TriggerClientEvent("TimerDisplay", Time, timerType, false);
+                Debug.WriteLine("Stopping timer thread");
+            }
+            else if (timerType == "hideStart" | timerType == "gameStart") 
+            {
+                killTimer = false;
+                timerSetThread.Start();
+                Debug.WriteLine("Timer set thread started");                    
+            }
 
             void TimerSet()
             {
                 //Time int passed through Timer function
-                while (Time != 0)
+                while (Time != 0) // | killTimer == false
                 {
-                    Thread.Sleep(1000);
-                    Time = Time - 1;
-                    TriggerClientEvent("TimerDisplay", Time);
-
-                    if (Time == 0)
+                    if (killTimer == true | Time == 0)
                     {
-                        TriggerClientEvent("TimerDisplay", Time);
+                        Time = 0;                        
+                        timerType = "stopTimer";
+                        TriggerClientEvent("TimerDisplay", Time, timerType, false);
+                        Debug.WriteLine("breaking while loop");
                         break;
                     }
+
+                    Thread.Sleep(1000);
+                    Time = Time - 1;
+                    TriggerClientEvent("TimerDisplay", Time, timerType, true);
+
                 }
             }
-
-        }
+        }    
 
         //Game States
         //

@@ -19,20 +19,18 @@ namespace OTR_City
             EventHandlers["playerSpawned"] += new Action(OnPlayerSpawned);
             EventHandlers["ClearVehicles"] += new Action(ClearVehicles);
             EventHandlers["ResetGame"] += new Action(ResetGame);
-            EventHandlers["TimerDisplay"] += new Action<int>(TimerDisplay);
+            EventHandlers["TimerDisplay"] += new Action<int, string, bool>(TimerDisplay);
             EventHandlers["MoveToLobby"] += new Action(MoveToLobby);
             EventHandlers["MoveToSpawn"] += new Action(MoveToSpawn);
         }
 
         //Global Variables
         //---------------------------
-        string TimerLabelPrefix;
+        string TimerLabelPrefix = "";
         string TimerLabelText;
+        //int[3] LabelColour;
+        //int[] LabelTextColour;
         bool firstSpawn = true;
-
-        //Coords for golf course carpark: -1382.93, 13.68, 54.98
-        float[] golfCoords = { -1382, 13, 53 };
-
 
         //FiveM Native Functions
         //
@@ -48,21 +46,21 @@ namespace OTR_City
             //Moves player to golf spawn
             TeleportToSpawnCommand();
 
-            SpawnCarCommand(); //Testing
+            //Allows player to change their model
             ChangePedCommand();
+
+            //Help command shows player commands
+            HelpCommand();
+
         }
 
         private void OnPlayerSpawned() //Runs on player spawn
         {
-
-
             //Give assault rifle on first session spawn ONLY
             AssaultRifleOnJoin();
 
             //Police ignore player
-            PoliceIgnorePlayer(true);
-
-            
+            PoliceIgnorePlayer(true);         
 
         }
 
@@ -103,15 +101,14 @@ namespace OTR_City
             MoveToSpawn();
             SpawnHunterVehicles();
             SpawnHunterHelis();
+            string endTimer = null;
+            TimerDisplay(0, endTimer, false);
         }
 
 
         //Client Custom Functions
         //
         //---------------------------------
-
-
-
         public void AssaultRifleOnJoin() //give assault rifle on player spawn, show message on first spawn only
         {
 
@@ -195,102 +192,213 @@ namespace OTR_City
 
         private async void SpawnHunterVehicles()
         {
-            string hunterCarModel = "khamelion";
+            int clientID = PlayerId();
 
-            var modelHash = (uint)GetHashKey(hunterCarModel);
-            if (IsModelInCdimage(modelHash))
+            //for (clientID = 0; clientID == 0;)
+            if (clientID == 0)
             {
-  
-                float[][] hunterCarCoords = new float[24][];
+                string hunterCarModel = "khamelion";
 
-                //Right hand side car spawn
-                hunterCarCoords[0] = new float[] {-1393, 97, 54, 132};
-                hunterCarCoords[1] = new float[] { -1393, 90, 54, 132 };
-                hunterCarCoords[2] = new float[] { -1393, 83, 54, 132 };
-                hunterCarCoords[3] = new float[] { -1393, 76, 54, 132 };
-                hunterCarCoords[4] = new float[] { -1390, 69, 54, 132 };
-                hunterCarCoords[5] = new float[] { -1390, 62, 54, 132 };
-                hunterCarCoords[6] = new float[] { -1390, 55, 54, 132 };
-                hunterCarCoords[7] = new float[] { -1390, 48, 54, 132 };
-                hunterCarCoords[8] = new float[] { -1388, 41, 54, 132 };
-                hunterCarCoords[9] = new float[] { -1387, 34, 54, 132 };
-                hunterCarCoords[10] = new float[] { -1387, 27, 54, 132 };
-                hunterCarCoords[11] = new float[] { -1387, 20, 54, 132 };
-
-                //Left hand side car spawn
-                hunterCarCoords[12] = new float[] { -1403, 97, 54, 236 };
-                hunterCarCoords[13] = new float[] { -1403, 90, 54, 236 };
-                hunterCarCoords[14] = new float[] { -1403, 83, 54, 236 };
-                hunterCarCoords[15] = new float[] { -1403, 76, 54, 236 };
-                hunterCarCoords[16] = new float[] { -1403, 69, 54, 236 };
-                hunterCarCoords[17] = new float[] { -1403, 62, 54, 236 };
-                //
-                hunterCarCoords[18] = new float[] { -1401, 55, 54, 236 };
-                hunterCarCoords[19] = new float[] { -1401, 48, 54, 236 };
-                hunterCarCoords[20] = new float[] { -1401, 41, 54, 236 };
-                hunterCarCoords[21] = new float[] { -1401, 34, 54, 236 };
-                hunterCarCoords[22] = new float[] { -1398, 27, 54, 236 };
-                hunterCarCoords[23] = new float[] { -1398, 20, 54, 236 };
-
-                for (int c = 0;  c < hunterCarCoords.Length; c++)
+                var modelHash = (uint)GetHashKey(hunterCarModel);
+                if (IsModelInCdimage(modelHash))
                 {
-                    RequestModel(modelHash);
-                    while (!HasModelLoaded(modelHash))
+
+                    float[][] hunterCarCoords = new float[24][];
+
+                    //Right hand side car spawn
+                    hunterCarCoords[0] = new float[] { -1393, 97, 54, 132 };
+                    hunterCarCoords[1] = new float[] { -1393, 90, 54, 132 };
+                    hunterCarCoords[2] = new float[] { -1393, 83, 54, 132 };
+                    hunterCarCoords[3] = new float[] { -1393, 76, 54, 132 };
+                    hunterCarCoords[4] = new float[] { -1390, 69, 54, 132 };
+                    hunterCarCoords[5] = new float[] { -1390, 62, 54, 132 };
+                    hunterCarCoords[6] = new float[] { -1390, 55, 54, 132 };
+                    hunterCarCoords[7] = new float[] { -1390, 48, 54, 132 };
+                    hunterCarCoords[8] = new float[] { -1388, 41, 54, 132 };
+                    hunterCarCoords[9] = new float[] { -1387, 34, 54, 132 };
+                    hunterCarCoords[10] = new float[] { -1387, 27, 54, 132 };
+                    hunterCarCoords[11] = new float[] { -1387, 20, 54, 132 };
+
+                    //Left hand side car spawn
+                    hunterCarCoords[12] = new float[] { -1403, 97, 54, 236 };
+                    hunterCarCoords[13] = new float[] { -1403, 90, 54, 236 };
+                    hunterCarCoords[14] = new float[] { -1403, 83, 54, 236 };
+                    hunterCarCoords[15] = new float[] { -1403, 76, 54, 236 };
+                    hunterCarCoords[16] = new float[] { -1403, 69, 54, 236 };
+                    hunterCarCoords[17] = new float[] { -1403, 62, 54, 236 };
+                    //
+                    hunterCarCoords[18] = new float[] { -1401, 55, 54, 236 };
+                    hunterCarCoords[19] = new float[] { -1401, 48, 54, 236 };
+                    hunterCarCoords[20] = new float[] { -1401, 41, 54, 236 };
+                    hunterCarCoords[21] = new float[] { -1401, 34, 54, 236 };
+                    hunterCarCoords[22] = new float[] { -1398, 27, 54, 236 };
+                    hunterCarCoords[23] = new float[] { -1398, 20, 54, 236 };
+
+                    for (int c = 0; c < hunterCarCoords.Length; c++)
                     {
-                        await Delay(0);
+                        RequestModel(modelHash);
+                        while (!HasModelLoaded(modelHash))
+                        {
+                            await Delay(0);
+                        }
+                        var vehicle = CreateVehicle(modelHash, hunterCarCoords[c][0], hunterCarCoords[c][1], hunterCarCoords[c][2], hunterCarCoords[c][3], true, false);
+                        SetVehicleColours(vehicle, 135, 135);
                     }
-                    var vehicle = CreateVehicle(modelHash, hunterCarCoords[c][0], hunterCarCoords[c][1], hunterCarCoords[c][2], hunterCarCoords[c][3], true, false);
-                    SetVehicleColours(vehicle, 135, 135);
                 }
             }
         }
         private async void SpawnHunterHelis()
         {
-            string hunterHeliModel = "polmav";
+            int clientID = PlayerId();
+            if (clientID == 0)
+            {
 
-            var modelHash = (uint)GetHashKey(hunterHeliModel);
-            if (IsModelInCdimage(modelHash))
-            {          
-                float[][] hunterHeliCoords = new float[3][];
+                string hunterHeliModel = "polmav";
 
-                //Right hand side car spawn
-                hunterHeliCoords[0] = new float[] { -1400, 125, 54, 180 };
-                hunterHeliCoords[1] = new float[] { -1376, 163, 57, 156 };
-                hunterHeliCoords[2] = new float[] { -1387, 143, 56, 155 };
-
-                for (int c = 0; c < hunterHeliCoords.Length; c++)
+                var modelHash = (uint)GetHashKey(hunterHeliModel);
+                if (IsModelInCdimage(modelHash))
                 {
-                    RequestModel(modelHash);
-                    while (!HasModelLoaded(modelHash))
+                    float[][] hunterHeliCoords = new float[3][];
+
+                    //Right hand side car spawn
+                    hunterHeliCoords[0] = new float[] { -1400, 125, 54, 180 };
+                    hunterHeliCoords[1] = new float[] { -1376, 163, 57, 156 };
+                    hunterHeliCoords[2] = new float[] { -1387, 143, 56, 155 };
+
+                    for (int c = 0; c < hunterHeliCoords.Length; c++)
                     {
-                        await Delay(0);
+                        RequestModel(modelHash);
+                        while (!HasModelLoaded(modelHash))
+                        {
+                            await Delay(0);
+                        }
+                        var vehicle = CreateVehicle(modelHash, hunterHeliCoords[c][0], hunterHeliCoords[c][1], hunterHeliCoords[c][2], hunterHeliCoords[c][3], true, false);
                     }
-                    var vehicle = CreateVehicle(modelHash, hunterHeliCoords[c][0], hunterHeliCoords[c][1], hunterHeliCoords[c][2], hunterHeliCoords[c][3], true, false);
                 }
             }
         }
         async void ChangePlayerPed()
-        {
-            
-            //var playerModel = new Model("a_m_m_soucent_03");
+        {                   
             await Game.Player.ChangeModel(RandomPlayerModel.RdmPlayerModel());
-            Debug.WriteLine("Changing player ped to:");
-            Debug.WriteLine(RandomPlayerModel.RdmPlayerModel().ToString());
+            AssaultRifleOnJoin();
+
+            TriggerEvent("chat:addMessage", new
+            {
+                color = new[] { 66, 200, 245 },
+                args = new[] { "[OnTheRun]", $"Changed player model" },
+            });
 
         }
 
-        public void TimerDisplay(int Time) //Get timer time from server
+        private void HelpMessage()
         {
-            if (Time == 0)
+            TriggerEvent("chat:addMessage", new
+            {
+                color = new[] { 66, 200, 245 },
+                args = new[] { "[OnTheRun]", $"Commands Available:" },
+            });
+
+            TriggerEvent("chat:addMessage", new
+            {
+                color = new[] { 66, 200, 245 },
+                args = new[] { "/help - Displays this help" },
+            });
+
+            TriggerEvent("chat:addMessage", new
+            {
+                color = new[] { 66, 200, 245 },
+                args = new[] { "/spawn - Teleports you to spawn" },
+            });
+
+            TriggerEvent("chat:addMessage", new
+            {
+                color = new[] { 66, 200, 245 },
+                args = new[] { "/ped - Randomize your player model" },
+            });
+        }
+
+
+        public void TimerDisplay(int Time, string timerType, bool timerHasRun) //Get timer time from server
+        {
+            if (Time == 0 & timerHasRun == false)
             {
                 TimerLabelPrefix = "";
+
+               if (timerType == "stopTimer")
+                {
+                    TimerLabelPrefix = "";
+                    TimerLabelText = "";
+                    Time = 0;
+                    Debug.WriteLine("Timer killed client");
+                    
+                }
             }
-            else
+            else if (timerType == "gameStart")
+            {
+                //LabelColour = { 255, 255, 255, 255 };
+                TimeSpan MinSec = TimeSpan.FromSeconds(Time);
+                TimerLabelPrefix = "Game Time Remaining: ~a~";
+                TimerLabelText = MinSec.ToString(@"mm\:ss");
+
+                if (Time == 0 & timerHasRun == true)
+                {
+                    Thread timeThread = new Thread(TimerEndFlash);
+                    timeThread.Start();
+                    void TimerEndFlash() {
+                        
+                        DateTime start = DateTime.Now;
+
+                    while (DateTime.Now.Subtract(start).Seconds < 30)
+                    {
+                            TimerLabelPrefix = "Game Over";
+                            Thread.Sleep(1000);
+                            TimerLabelPrefix = "";
+                            Thread.Sleep(1000);
+                            Debug.WriteLine("Time up loop");
+                    }
+                        timerHasRun = false;
+                        
+                    }
+                    if (timerHasRun == false)
+                    {
+                        timeThread.Abort();
+                    }
+                   
+                }
+          }
+            else if (timerType == "hideStart")
             {
                 TimeSpan MinSec = TimeSpan.FromSeconds(Time);
-                TimerLabelPrefix = "Time Remaining: ~a~";
+                TimerLabelPrefix = "Hiding Time Remaining: ~a~";
                 TimerLabelText = MinSec.ToString(@"mm\:ss");
+
+                if (Time == 0 && timerHasRun == true)
+                {
+                    Thread timeThread = new Thread(TimerEndFlash);
+                    timeThread.Start();
+                    void TimerEndFlash()
+                    {
+
+                        DateTime start = DateTime.Now;
+
+                        while (DateTime.Now.Subtract(start).Seconds < 10)
+                        {
+                            TimerLabelPrefix = "Hiding Time Up";
+                            Thread.Sleep(1000);
+                            TimerLabelPrefix = "";
+                            Thread.Sleep(1000);
+                            //Debug.WriteLine("Time up loop");
+                        }
+                        timerHasRun = false;
+
+                    }
+                    if (timerHasRun == false)
+                    {
+                        timeThread.Abort();
+                    }
+                }
             }
+
         }
 
         public void CustomText() //Display text in top right corner (used for timer)
@@ -300,9 +408,12 @@ namespace OTR_City
             AddTextComponentSubstringPlayerName(TimerLabelText);
             SetTextFont(4);
             SetTextOutline();
-            SetTextScale(0.5f, 0.5f);
-            EndTextCommandDisplayText(0.9f, 0.05f);
-            
+            SetTextCentre(true);
+            //SetTextColour(LabelColour[0], LabelColour[1], LabelColour[2], LabelColour[3]);
+            //SetTextScale(0.5f, 0.5f);
+            SetTextScale(1f, 1f);
+            //EndTextCommandDisplayText(0.9f, 0.05f);
+            EndTextCommandDisplayText(0.5f, 0.01f);
         }
 
         public void MoveToLobby()
@@ -326,23 +437,22 @@ namespace OTR_City
             }), false);
         }
 
-        private void SpawnCarCommand() //Testing command - to be deleted
-        {
-
-            RegisterCommand("car", new Action<int, List<object>, string>((source, args, raw) =>
-            {
-                SpawnHunterVehicles();
-                SpawnHunterHelis();
-
-            }), false);
-        }
-
         private void ChangePedCommand() //Testing command - to be deleted
         {
 
             RegisterCommand("ped", new Action<int, List<object>, string>((source, args, raw) =>
             {
                 ChangePlayerPed();
+
+            }), false);
+        }
+
+        private void HelpCommand() //Testing command - to be deleted
+        {
+
+            RegisterCommand("help", new Action<int, List<object>, string>((source, args, raw) =>
+            {
+                HelpMessage();
 
             }), false);
         }
