@@ -26,7 +26,7 @@ If you are a hunter and are killed, you can just respawn back at the spawn and c
 ## Server Side Commands:
 All server side commands are restricted to admins/owners defined in FiveM config. 
 ### "clear" 
-- Clears all vehicles for all players.
+- Clears all vehicles for all players.<br>
 ![Clear command example](img/clearCommand.png)
 
 ### "reset"
@@ -34,7 +34,7 @@ All server side commands are restricted to admins/owners defined in FiveM config
 
 ### "hidetimer"
 - Starts and displays a timer at the top center of the screen for 3 minutes.
-    - Used to give hiders time to hide
+    - Used to give hiders time to hide<br>
 ![Hide timer example](img/hideTimer.png)
 
 ### "gametimer"
@@ -48,7 +48,7 @@ All server side commands are restricted to admins/owners defined in FiveM config
 ## Client Commands:
 
 ### "help"
-- Gives list of commands to the player. 
+- Gives list of commands to the player.<br>
 ![Help command example](img/helpCommand.png)
 
 ### "spawn"
